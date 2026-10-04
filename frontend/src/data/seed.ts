@@ -1,4 +1,12 @@
-import type { EntryRow } from './types'
+import type { Assignment, EntryRow } from './types'
+
+// 检查单号归属登记：放行权限的权威来源。任务行上的「放行人员」只是这里的展示副本，
+// 两者冲突时以这份登记为准（见 local-service.ts 的放行分支）。
+export const SEED_ASSIGNMENTS: Assignment[] = [
+  { checkNo: 'LINE-0001', releaser: '张建国', team: '机务一班' },
+  { checkNo: 'LINE-0002', releaser: '李卫东', team: '机务一班' },
+  { checkNo: 'LINE-0003', releaser: '王海涛', team: '机务二班' },
+]
 
 // 示例数据：首次打开时播种，之后浏览器里的改动优先，重置才会回到这份。
 export const SEED_ROWS: Record<string, EntryRow[]> = {
@@ -9,7 +17,7 @@ export const SEED_ROWS: Record<string, EntryRow[]> = {
       "pending": true,
       "abnormal": false,
       "保障编号": "FLIG-0001",
-      "航班号": "航班保障样例1",
+      "航班号": "CA1801",
       "机型": "航班保障样例1",
       "计划到达": "航班保障样例1",
       "机位号": "航班保障样例1",
@@ -23,7 +31,7 @@ export const SEED_ROWS: Record<string, EntryRow[]> = {
       "pending": true,
       "abnormal": true,
       "保障编号": "FLIG-0002",
-      "航班号": "航班保障样例2",
+      "航班号": "CA1802",
       "机型": "航班保障样例2",
       "计划到达": "航班保障样例2",
       "机位号": "航班保障样例2",
@@ -37,7 +45,7 @@ export const SEED_ROWS: Record<string, EntryRow[]> = {
       "pending": false,
       "abnormal": false,
       "保障编号": "FLIG-0003",
-      "航班号": "航班保障样例3",
+      "航班号": "CA1803",
       "机型": "航班保障样例3",
       "计划到达": "航班保障样例3",
       "机位号": "航班保障样例3",
@@ -229,9 +237,9 @@ export const SEED_ROWS: Record<string, EntryRow[]> = {
       "pending": true,
       "abnormal": false,
       "任务编号": "LINE-0001",
-      "航班号": "机务勤务样例1",
+      "航班号": "CA1801",
       "勤务项目": "机务勤务样例1",
-      "放行人员": "机务勤务样例1",
+      "放行人员": "张建国",
       "开始时间": "2026-09-01",
       "结束时间": "2026-09-01",
       "检查单号": "LINE-0001",
@@ -243,9 +251,9 @@ export const SEED_ROWS: Record<string, EntryRow[]> = {
       "pending": true,
       "abnormal": true,
       "任务编号": "LINE-0002",
-      "航班号": "机务勤务样例2",
+      "航班号": "CA1802",
       "勤务项目": "机务勤务样例2",
-      "放行人员": "机务勤务样例2",
+      "放行人员": "李卫东",
       "开始时间": "2026-09-02",
       "结束时间": "2026-09-02",
       "检查单号": "LINE-0002",
@@ -257,9 +265,9 @@ export const SEED_ROWS: Record<string, EntryRow[]> = {
       "pending": false,
       "abnormal": false,
       "任务编号": "LINE-0003",
-      "航班号": "机务勤务样例3",
+      "航班号": "CA1803",
       "勤务项目": "机务勤务样例3",
-      "放行人员": "机务勤务样例3",
+      "放行人员": "王海涛",
       "开始时间": "2026-09-03",
       "结束时间": "2026-09-03",
       "检查单号": "LINE-0003",

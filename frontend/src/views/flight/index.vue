@@ -82,7 +82,8 @@ import {
 import type { EntryRow } from '@/data/types'
 
 const meta = moduleMeta('flight')
-const columns = ["保障编号", "航班号", "机型", "计划到达", "机位号", "保障等级", "保障班组", "保障状态"]
+// 「放行待办」由 local-service 按勤务放行状态实时派生注入，页面只负责展示，两边同源。
+const columns = ["保障编号", "航班号", "机型", "计划到达", "机位号", "保障等级", "保障班组", "保障状态", "放行待办"]
 const actions = ["接收任务", "开始保障", "确认完成"]
 const statuses = ["待接收", "保障中", "保障完成", "已终止"]
 const stats = [{"label": "今日保障任务", "value": 0}, {"label": "保障中任务", "value": 0}, {"label": "保障完成率", "value": 0}]
