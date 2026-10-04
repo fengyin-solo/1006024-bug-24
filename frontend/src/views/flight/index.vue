@@ -24,6 +24,44 @@
       </span>
     </p>
 
+    <!-- 放行待办：结论由机务勤务侧的放行服务推导，本页只读展示，两边同源，不在这里做放行操作。 -->
+    <section class="release-todo">
+      <h3 class="todo-title">勤务放行待办（与机务勤务页面同源）</h3>
+      <p class="page-desc">放行授权与结论以检查单号归属台账和放行留痕为准；勤务任务一旦放行，这里的待办随即消除。</p>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>勤务任务</th>
+            <th>检查单号</th>
+            <th>航班号</th>
+            <th>归属放行人员</th>
+            <th>勤务状态</th>
+            <th>放行结论</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="todo in releaseTodos" :key="todo.taskId">
+            <td>{{ todo.taskNo }}</td>
+            <td>{{ todo.checkNo }}</td>
+            <td>
+              {{ todo.flightNo }}
+              <span v-if="!todo.matchedFlight" class="warn-text cell-sub">（未匹配到航班保障任务）</span>
+            </td>
+            <td>{{ todo.ownerTeam }} · {{ todo.ownerPerson }}</td>
+            <td>{{ todo.status }}</td>
+            <td>
+              <span v-if="todo.released" class="ok-text">已放行</span>
+              <span v-else-if="todo.pendingRelease" class="warn-text">待归属放行人员放行</span>
+              <span v-else class="cell-sub">未到放行环节</span>
+            </td>
+          </tr>
+          <tr v-if="!releaseTodos.length">
+            <td colspan="6" class="empty-state">暂无勤务放行待办</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
     <form class="filter-bar" @submit.prevent="reload">
       <label v-for="field in filterFields" :key="field" class="filter-item">
         <span>{{ field }}</span>
@@ -79,7 +117,8 @@ import {
   moduleMeta,
   runAction as applyAction,
 } from '@/api/local-service'
-import type { EntryRow } from '@/data/types'
+import { releaseTodosForFlight } from '@/api/release-service'
+import type { EntryRow, ReleaseTodo } from '@/data/types'
 
 const meta = moduleMeta('flight')
 const columns = ["保障编号", "航班号", "机型", "计划到达", "机位号", "保障等级", "保障班组", "保障状态"]
@@ -89,6 +128,7 @@ const stats = [{"label": "今日保障任务", "value": 0}, {"label": "保障中
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
+const releaseTodos = ref<ReleaseTodo[]>([])
 const errorMessage = ref('')
 const filters = ref<Record<string, string>>({})
 const filterFields = columns.slice(0, 3)
@@ -128,6 +168,8 @@ function reload() {
     const payload = listEntries(meta.key, filters.value)
     rows.value = payload.items
     total.value = payload.total
+    // 放行待办直接取勤务侧同源推导结果，本页不维护第二份状态。
+    releaseTodos.value = releaseTodosForFlight()
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '航班保障列表读取失败'
   }

@@ -1,5 +1,7 @@
 import { MODULE_BY_KEY } from '@/data/modules'
 import { allRows, listRows, resetRows, saveRows } from '@/data/local-store'
+import { confirmRelease } from '@/api/release-service'
+import { useSessionStore } from '@/stores/session'
 import type { ActionResult, EntryRow, ModuleMeta, OverviewResult, PageResult } from '@/data/types'
 
 // 会写进数据的「往回走」动作：命中就把这条记录标成异常态，看板上能一眼看出来。
@@ -34,6 +36,14 @@ export function runAction(key: string, id: number, action: string): ActionResult
   if (!target) {
     return { ok: false, message: `${meta.entity}没有登记「${action}」这个动作` }
   }
+
+  // 内层兜底：勤务任务的「确认放行」只能走放行服务，任何页面都不能借通用动作直写「已放行」。
+  // 归属校验、幂等与留痕全部在放行服务里完成，这里不再提供绕过路径。
+  if (key === 'line' && action === '确认放行') {
+    const { actor } = useSessionStore()
+    return confirmRelease(actor, id)
+  }
+
   const rows = listRows(key)
   const index = rows.findIndex((row) => Number(row.id) === id)
   if (index < 0) {
